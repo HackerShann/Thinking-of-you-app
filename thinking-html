@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thinking of You 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500, #ff6b9d);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .connected { background: rgba(0, 255, 0, 0.2); }
+        .disconnected { background: rgba(255, 0, 0, 0.2); }
+
+        .person-selector {
+            margin-bottom: 2rem;
+        }
+
+        .person-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .person-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .person-btn.active {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: scale(1.05);
+        }
+
+        .person-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .thinking-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef, #fecfef, #ff9a9e);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .thinking-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+        }
+
+        .thinking-button:active {
+            transform: scale(1.05);
+        }
+
+        .thinking-button.pulse {
+            animation: heartbeat 0.6s ease-in-out;
+        }
+
+        .thinking-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.2); }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .stats {
+            margin-top: 2rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stats h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .stat-item.updated {
+            animation: highlight 1s ease;
+        }
+
+        @keyframes highlight {
+            0% { background: rgba(255,255,255,0.3); }
+            100% { background: transparent; }
+        }
+
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-size: 1.3rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .hearts {
+            position: absolute;
+            pointer-events: none;
+            font-size: 2rem;
+            animation: float 3s ease-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .last-message {
+            margin-top: 1rem;
+            font-style: italic;
+            opacity: 0.8;
+            min-height: 1.5rem;
+        }
+
+        .setup-instructions {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .setup-instructions h4 {
+            margin-bottom: 0.5rem;
+            color: #ffeb3b;
+        }
+
+        .setup-instructions p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Setup Instructions -->
+        <div class="setup-instructions" id="setupInstructions">
+            <h4>🚀 Setup Required</h4>
+            <p>To enable real-time notifications, you need to set up Firebase. Check the instructions below the app!</p>
+        </div>
+
+        <div class="header">
+            <h1 class="title">💕 Thinking of You 💕</h1>
+            <p class="subtitle">Send some love instantly</p>
+            <div class="connection-status" id="connectionStatus">
+                🔄 Connecting...
+            </div>
+        </div>
+
+        <div class="person-selector">
+            <p style="margin-bottom: 1rem;">Who are you?</p>
+            <div class="person-buttons">
+                <button class="person-btn" onclick="selectPerson('girlfriend')">Girlfriend</button>
+                <button class="person-btn" onclick="selectPerson('boyfriend')">Boyfriend</button>
+            </div>
+            <p id="selectedPerson" style="font-weight: bold;">Please select who you are</p>
+        </div>
+
+        <button class="thinking-button" onclick="sendThought()" id="mainButton" disabled>
+            💝<br>Thinking<br>of You
+        </button>
+
+        <div class="stats">
+            <h3>💖 Love Counter 💖</h3>
+            <div class="stat-item" id="girlfriendStat">
+                <span>Girlfriend sent:</span>
+                <span id="girlfriendCount">0</span>
+            </div>
+            <div class="stat-item" id="boyfriendStat">
+                <span>Boyfriend sent:</span>
+                <span id="boyfriendCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span><strong>Total love:</strong></span>
+                <span id="totalCount"><strong>0</strong></span>
+            </div>
+            <div class="last-message" id="lastMessage">
+                Ready to spread some love! 💕
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7RK9S6hfoE3_9rZWM9A8YQDSjHguUatE",
+            authDomain: "thinking-of-you-80ca1.firebaseapp.com",
+            databaseURL: "https://thinking-of-you-80ca1-default-rtdb.firebaseio.com",
+            projectId: "thinking-of-you-80ca1",
+            storageBucket: "thinking-of-you-80ca1.firebasestorage.app",
+            messagingSenderId: "1030826829742",
+            appId: "1:1030826829742:web:e418b917c073ab55dd0a3f",
+            measurementId: "G-4490FK480H"
+        };
+
+        // Initialize Firebase
+        let app, db, messaging;
+        let currentUser = '';
+        let isConnected = false;
+
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            
+            // Check if messaging is supported
+            if ('Notification' in window && 'serviceWorker' in navigator) {
+                messaging = firebase.messaging();
+            }
+            
+            initializeApp();
+        } catch (error) {
+            console.log('Firebase not configured yet:', error);
+            showOfflineMode();
+        }
+
+        function showOfflineMode() {
+            document.getElementById('connectionStatus').innerHTML = '📱 Demo Mode (Firebase not configured)';
+            document.getElementById('connectionStatus').className = 'connection-status disconnected';
+            // Enable demo mode with localStorage
+            enableDemoMode();
+        }
+
+        function enableDemoMode() {
+            // Load saved data for demo
+            const savedCounts = JSON.parse(localStorage.getItem('thinkingOfYouCounts') || '{"girlfriend": 0, "boyfriend": 0}');
+            updateCountsDisplay(savedCounts);
+            
+            document.getElementById('lastMessage').textContent = 'Demo Mode - counts saved locally 💕';
+        }
+
+        async function initializeApp() {
+            try {
+                // Set up real-time listener for counts
+                db.collection('loveApp').doc('counts').onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        updateCountsDisplay(data);
+                        
+                        if (data.lastSender && data.lastSender !== currentUser && data.lastTimestamp) {
+                            showRealTimeNotification(data.lastSender, data.lastTimestamp);
+                        }
+                    }
+                }, (error) => {
+                    console.error('Error listening to Firebase:', error);
+                    showOfflineMode();
+                });
+
+                // Request notification permission
+                if (messaging && Notification.permission === 'default') {
+                    await Notification.requestPermission();
+                }
+
+                // Set connection status
+                document.getElementById('connectionStatus').innerHTML = '🟢 Connected & Real-time';
+                document.getElementById('connectionStatus').className = 'connection-status connected';
+                document.getElementById('setupInstructions').style.display = 'none';
+                isConnected = true;
+
+            } catch (error) {
+                console.error('Failed to initialize Firebase features:', error);
+                showOfflineMode();
+            }
+        }
+
+        function selectPerson(person) {
+            currentUser = person;
+            
+            // Update button states
+            document.querySelectorAll('.person-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update selected person display
+            document.getElementById('selectedPerson').textContent = `Selected: ${person === 'girlfriend' ? 'Girlfriend' : 'Boyfriend'}`;
+            
+            // Enable main button
+            document.getElementById('mainButton').disabled = false;
+        }
+
+        async function sendThought() {
+            if (!currentUser) return;
+            
+            const button = document.getElementById('mainButton');
+            button.disabled = true;
+            
+            try {
+                if (isConnected) {
+                    // Update Firebase
+                    const docRef = db.collection('loveApp').doc('counts');
+                    const doc = await docRef.get();
+                    
+                    let counts = { girlfriend: 0, boyfriend: 0 };
+                    if (doc.exists) {
+                        counts = doc.data();
+                    }
+                    
+                    counts[currentUser] = (counts[currentUser] || 0) + 1;
+                    counts.lastSender = currentUser;
+                    counts.lastTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+                    
+                    await docRef.set(counts, { merge: true });
+                } else {
+                    // Demo mode with localStorage
+                    const savedCounts = JSON.parse(localStorage.getItem('thinkingOfYouCounts') || '{"girlfriend": 0, "boyfriend": 0}');
+                    savedCounts[currentUser]++;
+                    localStorage.setItem('thinkingOfYouCounts', JSON.stringify(savedCounts));
+                    updateCountsDisplay(savedCounts);
+                }
+                
+                // Visual feedback
+                button.classList.add('pulse');
+                setTimeout(() => button.classList.remove('pulse'), 600);
+                
+                createHearts();
+                showLocalNotification();
+                
+            } catch (error) {
+                console.error('Error sending thought:', error);
+                showNotification('Error sending love 😢 Try again!');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function updateCountsDisplay(data) {
+            const girlfriendCount = data.girlfriend || 0;
+            const boyfriendCount = data.boyfriend || 0;
+            
+            document.getElementById('girlfriendCount').textContent = girlfriendCount;
+            document.getElementById('boyfriendCount').textContent = boyfriendCount;
+            document.getElementById('totalCount').textContent = girlfriendCount + boyfriendCount;
+            
+            // Highlight updated stats
+            if (data.lastSender) {
+                const statElement = document.getElementById(data.lastSender + 'Stat');
+                statElement.classList.add('updated');
+                setTimeout(() => statElement.classList.remove('updated'), 1000);
+            }
+        }
+
+        function showRealTimeNotification(sender, timestamp) {
+            const senderName = sender === 'girlfriend' ? 'Girlfriend' : 'Boyfriend';
+            const time = timestamp?.toDate ? timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'just now';
+            
+            document.getElementById('lastMessage').textContent = `${senderName} sent love at ${time} 💕`;
+            
+            if (sender !== currentUser) {
+                showNotification(`💕 ${senderName} is thinking of you! 💕`);
+                createHearts();
+                
+                // Browser notification if permission granted
+                if (Notification.permission === 'granted') {
+                    new Notification('💕 Thinking of You', {
+                        body: `${senderName} sent you some love!`,
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💕</text></svg>'
+                    });
+                }
+            }
+        }
+
+        function showLocalNotification() {
+            const messages = [
+                `Love sent! 💕`,
+                `Your love is on its way! 💖`,
+                `Message delivered! 💗`,
+                `Sweet thoughts sent! 💝`
+            ];
+            
+            showNotification(messages[Math.floor(Math.random() * messages.length)]);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'hearts';
+                    heart.innerHTML = ['💖', '💕', '💗', '💝', '❤️', '💜'][Math.floor(Math.random() * 6)];
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = window.innerHeight - 50 + 'px';
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Add some sparkle to the background
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                createHearts();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
